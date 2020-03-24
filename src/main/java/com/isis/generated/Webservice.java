@@ -47,4 +47,12 @@ public class Webservice {
         ProductType product = new Gson().fromJson(data, ProductType.class);
         return Response.ok(services.updateProduct(data, product)).build();
     }
+    
+     @PUT
+    @Path("manager")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response editManager(String data) throws JAXBException, FileNotFoundException, IOException{
+        PallierType manager = new Gson().fromJson(data, PallierType.class);
+        return Response.ok(services.updateManager(data, manager)).build();
+    }
 }

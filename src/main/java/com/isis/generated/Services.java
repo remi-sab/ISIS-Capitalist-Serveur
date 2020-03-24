@@ -50,7 +50,7 @@ public class Services {
         } 
     }
     
-    public void saveWordlToXml(World world, String username) throws JAXBException, FileNotFoundException, IOException {
+    public void saveWorldToXml(World world, String username) throws JAXBException, FileNotFoundException, IOException {
 
         OutputStream output = new FileOutputStream(username+"-"+"world.xml");
         
@@ -82,7 +82,7 @@ public class Services {
         }
         
         world.setLastupdate(System.currentTimeMillis());
-        this.saveWordlToXml(world, username);
+        this.saveWorldToXml(world, username);
         return this.readWorldFromXml(username);
     }
     
@@ -115,7 +115,7 @@ public class Services {
             product.setQuantite(newproduct.getQuantite());
         } 
         // sauvegarder les changements du monde 
-        saveWordlToXml(world, username); 
+        saveWorldToXml(world, username); 
         
         return true; 
     }
@@ -130,7 +130,42 @@ public class Services {
         return product;
 
     }
-    
      
+     public Boolean updateManager(String username, PallierType newmanager) throws JAXBException, FileNotFoundException, IOException {
+        // aller chercher le monde qui correspond au joueur
+        World world = getWorld(username);
+        // trouver dans ce monde, le manager équivalent à celui passé
+        // en paramètre
+        PallierType manager = findManagerByName(world, newmanager.getName());
+        //Page 42
+        if (manager == null) {
+            return false;
+        }
+
+        // débloquer ce manager
+        // trouver le produit correspondant au manager
+        ProductType product = findProductById(world, manager.getIdcible());
+        if (product == null) {
+            return false;
+        }
+        // débloquer le manager de ce produit
+        product.setManagerUnlocked(true);
+        manager.setUnlocked(true);
+        // soustraire de l'argent du joueur le cout du manager
+        world.setMoney(world.getMoney()-manager.getSeuil());
+        // sauvegarder les changements au monde
+        saveWorldToXml(world, username);
+        return true;
+    }
+    
+     private PallierType findManagerByName(World world, String name) {
+        PallierType manager = null;
+        for (PallierType palier : world.getManagers().getPallier()) {
+            if (palier.getName().equals(name)) {
+                manager = palier;
+            }
+        }
+        return manager;
+    }
      
 }
