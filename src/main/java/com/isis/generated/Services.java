@@ -34,16 +34,16 @@ public class Services {
         
         try{
             File file = new File(username+"-"+"world.xml");
+            input = new FileInputStream(file);
             JAXBContext cont= JAXBContext.newInstance(World.class);
             Unmarshaller u = cont.createUnmarshaller();
-            World world= (World) u.unmarshal(file);
+            World world= (World) u.unmarshal(input);
         
             return world;
         }
         catch (Exception e){
             
             input = getClass().getClassLoader().getResourceAsStream("world.xml");
-            input = new FileInputStream(file);
             JAXBContext cont= JAXBContext.newInstance(World.class);
             Unmarshaller u= cont.createUnmarshaller();
             World world= (World) u.unmarshal(input);
