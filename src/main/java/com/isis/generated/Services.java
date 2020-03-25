@@ -7,6 +7,7 @@ package com.isis.generated;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,6 +43,7 @@ public class Services {
         catch (Exception e){
             
             input = getClass().getClassLoader().getResourceAsStream("world.xml");
+            input = new FileInputStream(file);
             JAXBContext cont= JAXBContext.newInstance(World.class);
             Unmarshaller u= cont.createUnmarshaller();
             World world= (World) u.unmarshal(input);
