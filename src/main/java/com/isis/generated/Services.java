@@ -28,28 +28,32 @@ import javax.xml.bind.Unmarshaller;
  */
 public class Services {
         
+     static World world = new World();
+    
     public World readWorldFromXml(String username) throws JAXBException {
         
-        InputStream input; 
+        InputStream input;
+        JAXBContext cont;
         
-        try{
-            File file = new File(username+"-"+"world.xml");
-            input = new FileInputStream(file);
-            JAXBContext cont= JAXBContext.newInstance(World.class);
-            Unmarshaller u = cont.createUnmarshaller();
-            World world= (World) u.unmarshal(input);
-        
-            return world;
+        try {
+            try{
+                File file = new File(username+"-"+"world.xml");
+                System.out.println(file.getAbsolutePath());
+                input = new FileInputStream(file);
         }
         catch (Exception e){
-            
             input = getClass().getClassLoader().getResourceAsStream("world.xml");
-            JAXBContext cont= JAXBContext.newInstance(World.class);
-            Unmarshaller u= cont.createUnmarshaller();
-            World world= (World) u.unmarshal(input);
-        
-            return world;
         } 
+            
+        cont= JAXBContext.newInstance(World.class);
+        Unmarshaller u = cont.createUnmarshaller();
+        world = (World) u.unmarshal(input);
+        
+        } catch (JAXBException ex){
+            ex.printStackTrace();
+        }
+        return world;
+        
     }
     
     public void saveWorldToXml(World world, String username) throws JAXBException, FileNotFoundException, IOException {
