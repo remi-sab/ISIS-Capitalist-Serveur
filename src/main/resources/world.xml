@@ -9,7 +9,7 @@ and open the template in the editor.
 <world xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='../java/com/IsisCapitalist/IsisCapitalist/worldSchema.xsd'>
     <name>Tatooine</name>
     <logo>tatooine.png</logo>
-<money>100</money>
+<money>0</money>
 <score>0</score>
 <totalangels>0</totalangels>
 <activeangels>0</activeangels>
@@ -30,7 +30,7 @@ and open the template in the editor.
         <palliers>
             <pallier>
                 <name>Pallier 1</name>
-                <logo>speeder.jpg</logo>
+                <logo>speeder.png</logo>
                 <seuil>10</seuil>
                 <idcible>1</idcible>
                 <ratio>3</ratio>
@@ -39,7 +39,7 @@ and open the template in the editor.
             </pallier>
             <pallier>
                 <name>Pallier 2</name>
-                <logo>speeder.jpg</logo>
+                <logo>speeder.png</logo>
                 <seuil>50</seuil>
                 <idcible>1</idcible>
                 <ratio>1.10</ratio>
@@ -48,7 +48,7 @@ and open the template in the editor.
             </pallier>
             <pallier>
                 <name>Pallier 3</name>
-                <logo>speeder.jpg</logo>
+                <logo>speeder.png</logo>
                 <seuil>100</seuil>
                 <idcible>1</idcible>
                 <ratio>1.2</ratio>
@@ -65,7 +65,7 @@ and open the template in the editor.
         <croissance>1.15</croissance>
         <revenu>60</revenu>
         <vitesse>3000</vitesse>
-        <quantite>1</quantite>
+        <quantite>0</quantite>
         <timeleft></timeleft>
         <managerUnlocked>false</managerUnlocked>
         <palliers>
@@ -104,9 +104,9 @@ and open the template in the editor.
         <logo>x-wing.png</logo>
         <cout>720</cout>
         <croissance>1.14</croissance>
-        <revenu>540000000</revenu>
+        <revenu>540</revenu>
         <vitesse>6000</vitesse>
-        <quantite>1</quantite>
+        <quantite>0</quantite>
         <timeleft></timeleft>
         <managerUnlocked>false</managerUnlocked>
         <palliers>
@@ -147,7 +147,7 @@ and open the template in the editor.
         <croissance>1.13</croissance>
         <revenu>4320</revenu>
         <vitesse>12000</vitesse>
-        <quantite>1</quantite>
+        <quantite>0</quantite>
         <timeleft></timeleft>
         <managerUnlocked>false</managerUnlocked>
         <palliers>
@@ -188,7 +188,7 @@ and open the template in the editor.
         <croissance>1.5</croissance>
         <revenu>51840</revenu>
         <vitesse>24000</vitesse>
-        <quantite>1</quantite>
+        <quantite>0</quantite>
         <timeleft></timeleft>
         <managerUnlocked>false</managerUnlocked>
         <palliers>
@@ -229,7 +229,7 @@ and open the template in the editor.
         <croissance>1.11</croissance>
         <revenu>622080</revenu>
         <vitesse>96000</vitesse>
-        <quantite>1</quantite>
+        <quantite>0</quantite>
         <timeleft></timeleft>
         <managerUnlocked>false</managerUnlocked>
         <palliers>
@@ -266,7 +266,7 @@ and open the template in the editor.
 <allunlocks>
     <pallier>
         <name>AllUnlock 1</name>
-        <logo></logo>
+        <logo>r2d2.png</logo>
         <seuil>2</seuil>
         <idcible>0</idcible>
         <ratio>1.5</ratio>
@@ -275,7 +275,7 @@ and open the template in the editor.
     </pallier>
     <pallier>
         <name>AllUnlock 2</name>
-        <logo></logo>
+        <logo>r2d2.png</logo>
         <seuil>50</seuil>
         <idcible>0</idcible>
         <ratio>2</ratio>
@@ -284,7 +284,7 @@ and open the template in the editor.
     </pallier>
     <pallier>
         <name>AllUnlock 3</name>
-        <logo></logo>
+        <logo>r2d2.png</logo>
         <seuil>100</seuil>
         <idcible>0</idcible>
         <ratio>3</ratio>

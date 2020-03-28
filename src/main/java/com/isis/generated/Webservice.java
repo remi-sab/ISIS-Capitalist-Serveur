@@ -16,6 +16,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -64,11 +65,27 @@ public class Webservice {
         return Response.ok(services.updateProduct(data, product)).build();
     }
     
-     @PUT
+    @PUT
     @Path("manager")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response editManager(String data) throws JAXBException, FileNotFoundException, IOException{
         PallierType manager = new Gson().fromJson(data, PallierType.class);
         return Response.ok(services.updateManager(data, manager)).build();
     }
+    
+    @PUT
+    @Path("upgrade")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void editUpgrade(@FormParam("data")String data, @FormParam("username")String username) throws JAXBException, FileNotFoundException, IOException{
+        PallierType upgrade = new Gson().fromJson(data, PallierType.class);
+        services.updateUpgrade(username, upgrade);
+    }
+    
+    @PUT
+    @Path("angelupgrade")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void editAngelUpgrade(@FormParam("data")String data, @FormParam("username")String username) throws JAXBException, FileNotFoundException, IOException{
+        PallierType upgrade = new Gson().fromJson(data, PallierType.class);
+        services.updateUpgrade(username, upgrade);
+    } 
 }
