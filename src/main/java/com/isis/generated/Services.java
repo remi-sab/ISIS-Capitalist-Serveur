@@ -39,11 +39,11 @@ public class Services {
         
         if(file.exists()){
             input = new FileInputStream(file);
-            System.out.println("J'ouvre le fichier"+file.getAbsolutePath());
+            System.out.println("J'ouvre le fichier : "+file.getAbsolutePath());
             
         } else { 
             input = getClass().getClassLoader().getResourceAsStream("world.xml");
-            System.out.println("Bienvenue au nouveau joueur"); 
+            System.out.println("Bienvenue au nouveau joueur !"); 
         }
         
         cont= JAXBContext.newInstance(World.class);
@@ -62,8 +62,9 @@ public class Services {
             cont= JAXBContext.newInstance(World.class);
             Marshaller m = cont.createMarshaller();
             m.marshal(world,output);
-            //System.out.println("J'enregistre la partie : "+output);
+            System.out.println("J'enregistre la partie : "+output);
             //output.close();
+            
         } catch (Exception ex) {
             System.out.println("Erreur : " + ex.getMessage());
             ex.printStackTrace();
