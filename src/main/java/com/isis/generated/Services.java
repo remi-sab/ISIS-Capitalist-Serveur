@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Produces;
@@ -38,19 +39,21 @@ public class Services {
         File file = new File(username+"-"+"world.xml");
         
         if(file.exists()){
-            input = new FileInputStream(file);
+            //input = new FileInputStream(file);
+            cont= JAXBContext.newInstance(World.class);
+            Unmarshaller u = cont.createUnmarshaller();
+            world = (World) u.unmarshal(file);
             System.out.println("J'ouvre le fichier : "+file.getAbsolutePath());
-            
+          
         } else { 
             input = getClass().getClassLoader().getResourceAsStream("world.xml");
-            System.out.println("Bienvenue au nouveau joueur !"); 
+            cont= JAXBContext.newInstance(World.class);
+            Unmarshaller u = cont.createUnmarshaller();
+            world = (World) u.unmarshal(input);
+            System.out.println("Bienvenue au nouveau joueur : "+username); 
         }
         
-        cont= JAXBContext.newInstance(World.class);
-        Unmarshaller u = cont.createUnmarshaller();
-        world = (World) u.unmarshal(input);
-        
-        return world;        
+        return world;     
     }
     
     public void saveWorldToXml(World world, String username) throws JAXBException, FileNotFoundException, IOException {
@@ -63,7 +66,7 @@ public class Services {
             Marshaller m = cont.createMarshaller();
             m.marshal(world,output);
             System.out.println("J'enregistre la partie : "+output);
-            //output.close();
+            output.close();
             
         } catch (Exception ex) {
             System.out.println("Erreur : " + ex.getMessage());
@@ -103,7 +106,45 @@ public class Services {
     // achat d’une certaine quantité de produit) 
     // renvoie false si l’action n’a pas pu être traitée 
     public Boolean updateProduct(String username, ProductType newproduct) throws JAXBException, IOException { 
-        // aller chercher le monde qui correspond au joueur 
+        
+        World world = getWorld(username);
+        ProductType product = findProductById(world, newproduct.getId());
+        if (product == null){
+            return false;
+        }
+        int qtchange = newproduct.getQuantite() - product.getQuantite();
+        if (qtchange>0){
+            double argent = world.getMoney();
+            double q = product.getCroissance();
+            //double prix= newproduct.cout*qtchange;
+            double prix1 = product.getCout();
+            double prix2 = prix1*((1-(Math.pow(q, qtchange)))/(1-q));
+            double argentRestant = argent- prix2;
+            world.setMoney(argentRestant);
+            product.setQuantite(newproduct.getQuantite());
+        } else {
+            product.timeleft = product.vitesse;
+        }
+        List<PallierType> t = (List<PallierType>) product.getPalliers().getPallier();
+        for (PallierType a : t){
+            if (a.isUnlocked()== false && product.getQuantite()>= a.getSeuil()){
+                a.setUnlocked(true);
+                if (a.getTyperatio()== TyperatioType.VITESSE){
+                    int b = product.getVitesse();
+                    b = (int) (b*a.getRatio());
+                    product.setVitesse(b);
+                }
+                else {
+                    double c = product.getRevenu();
+                    c = c*a.getRatio();
+                    product.setRevenu(c);
+                }
+            }
+        }
+        saveWorldToXml(world, username);
+        return true;
+    }
+        /*// aller chercher le monde qui correspond au joueur 
         World world = getWorld(username); 
         // trouver dans ce monde, le produit équivalent à celui passé en paramètre 
         ProductType product = findProductById(world, newproduct.getId()); 
@@ -126,8 +167,7 @@ public class Services {
         } 
         // sauvegarder les changements du monde 
         saveWorldToXml(world, username); 
-        return true; 
-    }
+        return true;*/
     
      private ProductType findProductById(World world, int id) {
         ProductType product = null;
