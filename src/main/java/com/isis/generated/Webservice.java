@@ -58,38 +58,8 @@ public class Webservice {
         services.deleteWorld(username);
     }
     
-    @PUT
-    @Path("product")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response editProduct(String data) throws JAXBException, FileNotFoundException, IOException{
-        ProductType product = new Gson().fromJson(data, ProductType.class);
-        return Response.ok(services.updateProduct(data, product)).build();
-    }
     
-    @PUT
-    @Path("manager")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response editManager(String data) throws JAXBException, FileNotFoundException, IOException{
-        PallierType manager = new Gson().fromJson(data, PallierType.class);
-        return Response.ok(services.updateManager(data, manager)).build();
-    }
-    
-    @PUT
-    @Path("upgrade")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void editUpgrade(@FormParam("data")String data, @FormParam("username")String username) throws JAXBException, FileNotFoundException, IOException{
-        PallierType upgrade = new Gson().fromJson(data, PallierType.class);
-        services.updateUpgrades(username, upgrade);
-    }
-    
-    @PUT
-    @Path("angelupgrade")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void editAngelUpgrade(@FormParam("data")String data, @FormParam("username")String username) throws JAXBException, FileNotFoundException, IOException{
-        PallierType upgrade = new Gson().fromJson(data, PallierType.class);
-        services.angelUpgrade(username, upgrade);
-    } 
-   /* @PUT
+   @PUT
     @Path("product")
     public void putProduct(@Context HttpServletRequest request, ProductType product) throws JAXBException, IOException {
         String username = request.getHeader("X-user");
@@ -110,17 +80,10 @@ public class Webservice {
         services.updateUpgrades(username, upgrade);
     }
 
-    @DELETE
-    @Path("world")
-    public void deleteWorld(@Context HttpServletRequest request) throws JAXBException, IOException {
-        String username = request.getHeader("X-user");
-        services.deleteWorld(username);
-    }
-
     @PUT
     @Path("angelupgrade")
     public void angelUpgrade(@Context HttpServletRequest request, PallierType ange) throws JAXBException, IOException {
         String username = request.getHeader("X-user");
         services.angelUpgrade(username, ange);
-    }*/
+    }
 }

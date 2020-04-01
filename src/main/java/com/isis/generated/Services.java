@@ -37,8 +37,8 @@ public class Services {
         JAXBContext cont;
         
         try {
+            File file = new File(username + "-world.xml");
             //input = new FileInputStream(file);
-            File file = new File(username + "-" + "world.xml");
             cont = JAXBContext.newInstance(World.class);
             Unmarshaller u = cont.createUnmarshaller();
             world = (World) u.unmarshal(file);
