@@ -37,8 +37,7 @@ public class Services {
         JAXBContext cont;
         
         try {
-            File file = new File(username + "-world.xml");
-            //input = new FileInputStream(file);
+            File file = new File(username + "-" + "world.xml");
             cont = JAXBContext.newInstance(World.class);
             Unmarshaller u = cont.createUnmarshaller();
             world = (World) u.unmarshal(file);
@@ -59,12 +58,11 @@ public class Services {
         JAXBContext cont;
 
         try {
-            OutputStream output = new FileOutputStream(username + "-" + "world.xml");
+            File file = new File(username + "-" + "world.xml");
             cont = JAXBContext.newInstance(World.class);
             Marshaller m = cont.createMarshaller();
-            m.marshal(world, output);
-            System.out.println("J'enregistre la partie : " + output);
-            output.close();
+            m.marshal(world, file);
+            System.out.println("J'enregistre la partie : " + file.getAbsolutePath());
 
         } catch (Exception ex) {
             System.out.println("Erreur : " + ex.getMessage());
@@ -126,10 +124,10 @@ public class Services {
         return angeToClaim;
     }
 
-    public void updateWorld(World world) {
-        Long derniereMaj = world.getLastupdate();
-        Long maintenant = System.currentTimeMillis();
-        Long delta = maintenant - derniereMaj;
+    /*public void updateWorld(World world) {
+        //Long derniereMaj = world.getLastupdate();
+        //Long maintenant = System.currentTimeMillis();
+        Long delta = System.currentTimeMillis() - world.getLastupdate();
         int angeBonus = world.getAngelbonus();
         List<ProductType> pt = (List<ProductType>) world.getProducts();
         for (ProductType a : pt) {
@@ -146,18 +144,13 @@ public class Services {
                     double argent = a.getRevenu();
                     world.setMoney(world.getMoney() + argent);
                     world.setScore(world.getScore() + argent);
-
                 }
                 a.setTimeleft(a.getTimeleft() - delta);
             }
         }
         world.setLastupdate(System.currentTimeMillis());
-    }
+    }*/
 
-    // prend en paramètre le pseudo du joueur et le produit 
-    // sur lequel une action a eu lieu (lancement manuel de production ou 
-    // achat d’une certaine quantité de produit) 
-    // renvoie false si l’action n’a pas pu être traitée 
     public Boolean updateProduct(String username, ProductType newproduct) throws JAXBException, IOException {
 
         World world = getWorld(username);
@@ -170,9 +163,9 @@ public class Services {
             double argent = world.getMoney();
             double q = product.getCroissance();
             //double prix= newproduct.cout*qtchange;
-            double prix1 = product.getCout();
-            double prix2 = prix1 * ((1 - (Math.pow(q, qtchange))) / (1 - q));
-            double argentRestant = argent - prix2;
+            //double prix1 = product.getCout();
+            double prix = product.getCout() * ((1 - (Math.pow(q, qtchange))) / (1 - q));
+            double argentRestant = argent - prix;
             world.setMoney(argentRestant);
             product.setQuantite(newproduct.getQuantite());
         } else {
@@ -196,31 +189,6 @@ public class Services {
         saveWorldToXml(world, username);
         return true;
     }
-
-    /*// aller chercher le monde qui correspond au joueur 
-        World world = getWorld(username); 
-        // trouver dans ce monde, le produit équivalent à celui passé en paramètre 
-        ProductType product = findProductById(world, newproduct.getId()); 
-        if (product == null) { return false;} 
-        // calculer la variation de quantité. Si elle est positive c'est 
-        // que le joueur a acheté une certaine quantité de ce produit 
-        // sinon c’est qu’il s’agit d’un lancement de production. 
-        int qtchange = newproduct.getQuantite() - product.getQuantite(); 
-        if (qtchange > 0) { 
-            // soustraire de l'argent du joueur le cout de la quantité 
-            // achetée et mettre à jour la quantité de product 
-            double cout = (product.getCout() * (1 - Math.pow(product.getCroissance(), product.getQuantite()))) / (1 - product.getCroissance());
-            world.setMoney(world.getMoney() - cout);
-            product.setQuantite(product.getQuantite() + newproduct.getQuantite());
-        } else { 
-            // initialiser product.timeleft à product.vitesse 
-            // pour lancer la production 
-            product.setTimeleft(product.getVitesse());
-            product.setQuantite(newproduct.getQuantite());
-        } 
-        // sauvegarder les changements du monde 
-        saveWorldToXml(world, username); 
-        return true;*/
 
     private ProductType findProductById(World world, int id) {
         ProductType product = null;
@@ -265,22 +233,28 @@ public class Services {
 
     public boolean updateUpgrades(String username, PallierType upgrade) throws JAXBException, IOException {
         World world = getWorld(username);
-        if (world.getMoney() >= upgrade.getSeuil()) {
-            if (upgrade.getIdcible() == 0) {
-                List<ProductType> listeProduits = world.getProducts().getProduct();
-                for (ProductType p : listeProduits) {
+           if(upgrade.getIdcible() == 0){
+            boolean allunlocks = true;
+            for (ProductType p : world.getProducts().getProduct()){
+                if(p.getQuantite()< upgrade.getSeuil()){
+                    allunlocks=false;
+                }
+            }
+            if(allunlocks){
+                for (ProductType p : world.getProducts().getProduct()){
                     majPallier(upgrade, p);
                 }
-                return true;
-            } else {
-                ProductType p = findProductById(world, upgrade.getIdcible());
+            }
+            return true;
+        } else {
+            ProductType p = findProductById(world, upgrade.getIdcible());
+            if(p.getQuantite()>upgrade.getSeuil()){
                 majPallier(upgrade, p);
                 return true;
             }
-
         }
         return false;
-    }
+   }
 
     public void majPallier(PallierType pt, ProductType p) {
         pt.setUnlocked(true);
@@ -291,11 +265,9 @@ public class Services {
 
         }
         if (pt.getTyperatio() == TyperatioType.GAIN) {
-
             double c = p.getRevenu();
             c = c * pt.getRatio();
             p.setRevenu(c);
-
         }
     }
 
