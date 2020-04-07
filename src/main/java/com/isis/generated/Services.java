@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,29 +74,17 @@ public class Services {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public World getWorld(String username) throws JAXBException, FileNotFoundException, IOException {
         World world = readWorldFromXml(username);
-        saveWorldToXml(world, username);
-        return world;
-        /*for (ProductType prod : world.getProducts().getProduct()) {
-            if (!prod.isManagerUnlocked()) {
-                if (prod.getTimeleft() != 0) {
-                    if (prod.getTimeleft() < (System.currentTimeMillis() - world.getLastupdate())) {
-                        world.setScore(world.getScore() + prod.getRevenu());
-                    } else {
-                        prod.setTimeleft(prod.getTimeleft() - (System.currentTimeMillis() - world.getLastupdate()));
-                    }
-                }
-            } else {
-                long time = System.currentTimeMillis() - world.getLastupdate();
-                long nb_prod = (time / prod.getVitesse());
-                long time_left = (time % prod.getVitesse());
-                world.setScore(world.getScore() + prod.getRevenu() * nb_prod);
-                prod.setTimeleft(time_left);
-            }
+        long timeCurrent = System.currentTimeMillis();
+        long LastTime = world.getLastupdate();
+ 
+        if (LastTime == timeCurrent){
+            return world;
         }
-        
-        world.setLastupdate(System.currentTimeMillis());
-        saveWorldToXml(world, username);
-        return this.readWorldFromXml(username);*/
+        // Mise à jour du Score
+        updateWorld(world);
+        world.setLastupdate(timeCurrent); 
+        saveWorldToXml(world,username);
+        return world;
     }
 
     public void deleteWorld(String username) throws JAXBException, FileNotFoundException, IOException {
@@ -106,7 +95,7 @@ public class Services {
         angeActif += angeActif + aRajouter;
         angeTotal += angeTotal + aRajouter;
         double score = monde.getScore();
-
+       
         InputStream input = getClass().getClassLoader().getResourceAsStream("world.xml");
         JAXBContext cont = JAXBContext.newInstance(World.class);
         Unmarshaller u = cont.createUnmarshaller();
@@ -114,6 +103,7 @@ public class Services {
         world.setActiveangels(angeActif);
         world.setTotalangels(angeTotal);
         world.setScore(score);
+
         saveWorldToXml(world, username);
 
     }
@@ -124,32 +114,36 @@ public class Services {
         return angeToClaim;
     }
 
-    /*public void updateWorld(World world) {
-        //Long derniereMaj = world.getLastupdate();
-        //Long maintenant = System.currentTimeMillis();
-        Long delta = System.currentTimeMillis() - world.getLastupdate();
-        int angeBonus = world.getAngelbonus();
-        List<ProductType> pt = (List<ProductType>) world.getProducts();
-        for (ProductType a : pt) {
-            if (a.isManagerUnlocked()) {
-                int tempsProduit = a.getVitesse();
-                int nbrePd = (int) (delta / tempsProduit);
-                long restant = a.getVitesse() - delta % tempsProduit;
-                double argent = a.getRevenu() * nbrePd * (1 + world.getActiveangels() * angeBonus / 100);
+    public void updateWorld(World world) {
+        long timeSinceUpdate = System.currentTimeMillis()-world.getLastupdate();
+        double angeBonus = Math.pow(world.getAngelbonus(), world.getActiveangels());
+
+        for (ProductType product : world.getProducts().getProduct()) {
+            long timeleft = product.getTimeleft();
+            if (timeleft != 0) {
+                if(timeleft<timeSinceUpdate){
+                    world.setScore(world.getScore() + (product.getRevenu() * angeBonus));
+                    timeSinceUpdate -= timeleft;
+                } else {
+                    product.setTimeleft(timeleft - timeSinceUpdate);
+                    timeSinceUpdate = 0;
+                }
+            }
+            if (product.isManagerUnlocked()) {
+                //Calcul de l'argent gagné
+                int productionTime = product.getVitesse();
+                int nbProduit = (int) (timeSinceUpdate / productionTime);
+                double argent = product.getRevenu() * nbProduit * angeBonus;
+                //Mise à jour score et argent
                 world.setMoney(world.getMoney() + argent);
                 world.setScore(world.getScore() + argent);
-                a.setTimeleft(restant);
-            } else {
-                if (a.getTimeleft() != 0 && a.getTimeleft() < delta) {
-                    double argent = a.getRevenu();
-                    world.setMoney(world.getMoney() + argent);
-                    world.setScore(world.getScore() + argent);
-                }
-                a.setTimeleft(a.getTimeleft() - delta);
+                //Calcul du temps restant sur la production du produit
+                long tempsrestant = productionTime * (nbProduit + 1) - timeSinceUpdate;
+                product.setTimeleft(tempsrestant);
             }
         }
-        world.setLastupdate(System.currentTimeMillis());
-    }*/
+
+    }
 
     public Boolean updateProduct(String username, ProductType newproduct) throws JAXBException, IOException {
 
@@ -277,7 +271,7 @@ public class Services {
         double angeActif = world.getActiveangels();
         double newAngeActif = angeActif - a;
         if (ange.getTyperatio() == TyperatioType.ANGE) {
-            int angeBonus = world.getAngelbonus();
+            double angeBonus = world.getAngelbonus();
             angeBonus += angeBonus + ange.getRatio();
             world.setAngelbonus(angeBonus);
             //demander

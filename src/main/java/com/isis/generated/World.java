@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="score" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *         &lt;element name="totalangels" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *         &lt;element name="activeangels" type="{http://www.w3.org/2001/XMLSchema}double"/>
- *         &lt;element name="angelbonus" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="angelbonus" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *         &lt;element name="lastupdate" type="{http://www.w3.org/2001/XMLSchema}long"/>
  *         &lt;element name="products" type="{}productsType"/>
  *         &lt;element name="allunlocks" type="{}palliersType"/>
@@ -73,7 +73,7 @@ public class World {
     protected double score;
     protected double totalangels;
     protected double activeangels;
-    protected int angelbonus;
+    protected double angelbonus;
     protected long lastupdate;
     @XmlElement(required = true)
     protected ProductsType products;
@@ -202,7 +202,7 @@ public class World {
      * Obtient la valeur de la propri�t� angelbonus.
      * 
      */
-    public int getAngelbonus() {
+    public double getAngelbonus() {
         return angelbonus;
     }
 
@@ -210,7 +210,7 @@ public class World {
      * D�finit la valeur de la propri�t� angelbonus.
      * 
      */
-    public void setAngelbonus(int value) {
+    public void setAngelbonus(double value) {
         this.angelbonus = value;
     }
 
