@@ -79,12 +79,14 @@ public class Services {
  
         if (LastTime == timeCurrent){
             return world;
-        }
+        } 
+        else {
         // Mise à jour du Score
-        updateWorld(world);
+        world = updateWorld(world);
         world.setLastupdate(timeCurrent); 
         saveWorldToXml(world,username);
         return world;
+        }
     }
 
     public void deleteWorld(String username) throws JAXBException, FileNotFoundException, IOException {
@@ -114,15 +116,16 @@ public class Services {
         return angeToClaim;
     }
 
-    public void updateWorld(World world) {
+    public World updateWorld(World world) {
         long timeSinceUpdate = System.currentTimeMillis()-world.getLastupdate();
-        double angeBonus = Math.pow(world.getAngelbonus(), world.getActiveangels());
+        double angeBonus = Math.pow(world.getAngelbonus(),world.getActiveangels());
 
         for (ProductType product : world.getProducts().getProduct()) {
             long timeleft = product.getTimeleft();
             if (timeleft != 0) {
                 if(timeleft<timeSinceUpdate){
                     world.setScore(world.getScore() + (product.getRevenu() * angeBonus));
+                    world.setMoney(world.getMoney() + (product.getRevenu() * angeBonus));
                     timeSinceUpdate -= timeleft;
                 } else {
                     product.setTimeleft(timeleft - timeSinceUpdate);
@@ -142,7 +145,7 @@ public class Services {
                 product.setTimeleft(tempsrestant);
             }
         }
-
+      return world;
     }
 
     public Boolean updateProduct(String username, ProductType newproduct) throws JAXBException, IOException {
@@ -156,8 +159,6 @@ public class Services {
         if (qtchange > 0) {
             double argent = world.getMoney();
             double q = product.getCroissance();
-            //double prix= newproduct.cout*qtchange;
-            //double prix1 = product.getCout();
             double prix = product.getCout() * ((1 - (Math.pow(q, qtchange))) / (1 - q));
             double argentRestant = argent - prix;
             world.setMoney(argentRestant);
@@ -274,20 +275,10 @@ public class Services {
             double angeBonus = world.getAngelbonus();
             angeBonus += angeBonus + ange.getRatio();
             world.setAngelbonus(angeBonus);
-            //demander
         } else {
             updateUpgrades(username, ange);
         }
         world.setActiveangels(newAngeActif);
     }
 
-    /*private PallierType findUpgradeByName(World world, String name) {
-        PallierType upgrade = null;
-        for (PallierType p : world.getUpgrades().getPallier()) {
-            if (p.getName().equals(name)) {
-                upgrade = p;
-            }
-        }
-        return upgrade;
-    }*/
 }
